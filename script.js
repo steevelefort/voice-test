@@ -253,6 +253,7 @@ function testMicrophone() {
             microphone.disconnect();
             
             log('Test du microphone terminé.');
+            init();
             
             const retryButton = document.createElement('button');
             retryButton.innerText = 'Réessayer avec nouveau paramètres';
