@@ -35,9 +35,14 @@ function runRecognition() {
 
     // Gérer les erreurs
     recognition.onerror = (event) => {
-      log('Erreur de reconnaissance vocale :')
-      log(event.error);
-      // runRecognition();
+      log(`❌ Erreur de reconnaissance : ${event.error}`);
+      if (event.error === "not-allowed") {
+        log("🚨 Vérifie les permissions du microphone dans ton navigateur !");
+      } else if (event.error === "network") {
+        log("🌍 Vérifie ta connexion internet.");
+      } else if (event.error === "no-speech") {
+        log("🔇 Aucune voix détectée, parle plus fort.");
+      }
     };
 
     // Démarrer la reconnaissance vocale
