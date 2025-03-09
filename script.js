@@ -349,5 +349,77 @@ function init() {
   }
 }
 
+async function selectMicrophone() {
+  try {
+    // Afficher tous les appareils audio disponibles
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const audioInputs = devices.filter(device => device.kind === 'audioinput');
+    
+    if (audioInputs.length === 0) {
+      log("❌ Aucun microphone détecté sur l'appareil!");
+      return null;
+    }
+    
+    log(`📢 Microphones disponibles (${audioInputs.length}) :`);
+    audioInputs.forEach((device, index) => {
+      log(`${index + 1}. ${device.label || 'Microphone ' + (index + 1)}`);
+    });
+    
+    // Créer des boutons pour chaque microphone
+    const microphoneSelectionDiv = document.createElement('div');
+    microphoneSelectionDiv.style.margin = '10px 0';
+    document.body.appendChild(microphoneSelectionDiv);
+    
+    audioInputs.forEach((device, index) => {
+      const button = document.createElement('button');
+      button.innerText = `Utiliser ${device.label || 'Microphone ' + (index + 1)}`;
+      button.style.display = 'block';
+      button.style.margin = '5px';
+      button.style.padding = '10px';
+      button.onclick = async () => {
+        log(`Tentative d'utilisation du microphone: ${device.label || 'Microphone ' + (index + 1)}`);
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {deviceId: {exact: device.deviceId}}
+          });
+          log(`✅ Microphone sélectionné avec succès`);
+          testMicrophone(stream);
+        } catch (error) {
+          log(`❌ Erreur lors de la sélection du microphone: ${error}`);
+        }
+      };
+      microphoneSelectionDiv.appendChild(button);
+    });
+    
+    // Bouton pour utiliser le microphone par défaut
+    const defaultButton = document.createElement('button');
+    defaultButton.innerText = 'Utiliser le microphone par défaut';
+    defaultButton.style.display = 'block';
+    defaultButton.style.margin = '5px';
+    defaultButton.style.padding = '10px';
+    defaultButton.onclick = async () => {
+      log(`Tentative d'utilisation du microphone par défaut`);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+        log(`✅ Microphone par défaut sélectionné avec succès`);
+        testMicrophone(stream);
+      } catch (error) {
+        log(`❌ Erreur lors de la sélection du microphone par défaut: ${error}`);
+      }
+    };
+    microphoneSelectionDiv.appendChild(defaultButton);
+    
+  } catch (error) {
+    log(`❌ Erreur lors de l'énumération des appareils: ${error}`);
+    return null;
+  }
+}
+
+// Modifiez votre fonction init pour appeler celle-ci
+function initMic() {
+  log('🧪 Test des microphones disponibles');
+  selectMicrophone();
+}
 // Démarrer l'application
-init();
+// init();
+initMic();
