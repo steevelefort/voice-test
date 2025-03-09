@@ -1,3 +1,4 @@
+
 function log(message) {
   div = document.createElement('div');
   div.innerText = message;
